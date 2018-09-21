@@ -1,54 +1,30 @@
 #include "ESC.h"
+#include "field.h"
 #include <stdio.h>
 #include <malloc.h>
 
 void main() {
-	int field_size = 0;
-	int s_field_size; /*sqr*/
-	char** field;
-	char** buff_field;
-	char* top;
-	char* bot;
-	int i,j;
+	field_t* field01;
+	field_t* field02;
+	int n,m;
+
 	set_display_atrib(F_YELLOW); 
 	set_display_atrib(B_BLACK); 
 	clrscr();
-	printf("┌────────────────────────────────────┐\n");
-	printf("|      Welcome to Game of Life!      |\n");
-	printf("└────────────────────────────────────┘\n\nWrite a size of field: ");
+	printf("######################################\n");
+	printf("#      Welcome to Game of Life!      #\n");
+	printf("######################################\n\nWrite a size of field (n, m): ");
+	
+	scanf("%d%d", &n, &m);
 
-	scanf("%d", &field_size);
-
-	if (field_size > 100 || field_size < 2) {
-		printf("max - 100, min - 2\nTry again or just exit (ctrl + c): ");
+	if (n > 100 || n < 20 || m > 100 || m < 20) {
+		printf("max - 100, min - 20\nTry again or just exit (ctrl + c): ");
+		scanf("%d%d", &n, &m);
 	}
 
-	field =(char**) malloc(sizeof(char*)*field_size);
-	buff_field =(char**) malloc(sizeof(char*)*field_size);
+	field01 = field_def(n,m);
+	field02 = field_def(n,m);
 
-	for (i = 0; i < field_size; ++i) {
-		field[i] =(char*) malloc(sizeof(char)*field_size);
-		buff_field[i] =(char*) malloc(sizeof(char)*field_size);
-
-		for (j = 0; j < field_size; ++j) {
-			field[i][j] = 32;/*space*/
-			buff_field[i][j] = 32;
-		}
-	}
-
-
-	top = malloc(sizeof(char)*(field_size));
-	bot = malloc(sizeof(char)*(field_size));
+	print_field(field01);	
 	
-	for (i = 0; i < field_size; ++i) {
-		*(top + i) = '#';
-		*(bot + i) = '#';
-	}	
-	
-	
-	printf("#%s#\n",top);
-	for (i = 0; i < field_size; ++i) {
-		printf("#%s#\n", *(field + i));	
-	}	
-	printf("#%s#\n",bot);
 }
