@@ -3,7 +3,7 @@
 all: clean main
 
 main: field.o main.o
-	gcc -o main main.o field.o
+	gcc main.o field.o -o main -lncurses
 main.o:
 	gcc -c main.c -o main.o
 field.o:
