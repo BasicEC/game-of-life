@@ -5,7 +5,6 @@
 #include <curses.h> 
 
 static int greeting() {
-	char key;
 	int width = 83;/*hard code*/
 	int height = 7;
 	int offsetx = (COLS - width) / 2;
@@ -36,11 +35,12 @@ static int greeting() {
 	return 0;
 
 }
+
 int main() {	
-	field_t* field01;
-	field_t* field02;
-	int n,m;
-	char key;
+	int x,y;
+	x = 1;
+	y = 1;
+	int key;
 
 	if(!initscr()) {
 		printf("Error of init ncurses :(\n");
@@ -55,8 +55,39 @@ int main() {
 	noecho();
 	greeting();
 	clear();
+	box(stdscr, 0, 0);
+	
+	wmove(stdscr, y, x);
 	refresh();
-	sleep(3);
+	keypad(stdscr, TRUE);
+	
+	while (TRUE) {
+		key = getch();
+		switch (key) {
+		case KEY_UP:
+			if (y <= 1) break;
+			--y;
+			wmove(stdscr, y, x);
+			break;
+		case KEY_DOWN:
+			if (y >= LINES - 2) break;
+			++y;
+			wmove(stdscr, y, x);
+			break;
+		case KEY_LEFT:		
+			if (x <= 1) break;
+			--x;
+			wmove(stdscr, y, x);
+			break;
+		case KEY_RIGHT:		
+			if (x >= COLS - 2) break;
+			++x;
+			wmove(stdscr, y, x);
+			break;
+		}
+		if (key == 10) break;
+	}
 	endwin();
 	return 0;
 }
+
