@@ -1,4 +1,4 @@
-#include "../include/field.h"
+#include "field.h"
 #include <stdio.h>
 #include <malloc.h>
 #include <curses.h>
@@ -20,12 +20,26 @@ static field_t* init(int n, int m) {
 	return field;
 }
 
+
+static void free_plane(field_t* field) {
+	for (int i = 0; i < field->n; ++i) {
+		free(field->plane[i]);
+	}
+}
+
 field_t* field_def(int n, int m) {
 	field_t* field = init(n, m);
 	init_plane(field);	
 	return field;
 }
 
+void field_free(field_t* field) {
+	free_plane(field);
+	free(field->plane);
+	free(field);
+}
+
+/*rewrite for ncurses*/
 void print_field(field_t* field) {
 	int i;
 	for (i = 0; i < field->n; ++i) {

@@ -13,6 +13,8 @@ typedef struct {
 /* "constructors" */
 field_t* field_def(int n, int m);
 
+void field_free(field_t* field);
+
 /* funcs */
 void print_field(field_t* field);
 
