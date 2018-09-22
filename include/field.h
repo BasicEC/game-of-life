@@ -14,6 +14,6 @@ typedef struct {
 field_t* field_def(int n, int m);
 
 /* funcs */
-void print_field(field_t* fiel);
+void print_field(field_t* field);
 
 #endif

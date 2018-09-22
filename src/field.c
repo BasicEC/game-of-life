@@ -1,4 +1,4 @@
-#include "field.h"
+#include "../include/field.h"
 #include <stdio.h>
 #include <malloc.h>
 #include <curses.h>

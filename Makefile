@@ -1,12 +1,18 @@
-# simple makefile
+CC=gcc
+IDIR=./include
+BDIR=./build
+TARGET=main
+CFLAGS=-Wall -I$(IDIR)
+SRC=$(wildcard src/*.c)
+OBJ=$(SRC:src/%.c=build/%.o)
 
-all: clean main
+mainmake: $(OBJ)
+	$(CC) -o $(TARGET) $(OBJ) -lncurses
 
-main: field.o main.o
-	gcc main.o field.o -o main -lncurses
-main.o:
-	gcc -c main.c -o main.o
-field.o:
-	gcc -c field.c -o field.o
+build/%.o: src/%.c
+	$(CC) -c -o $@ $< 
+
+mkbuild:
+	mkdir build 
 clean:
-	rm -rf *.o main
+	rm -rf build
