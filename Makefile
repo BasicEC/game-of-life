@@ -16,5 +16,6 @@ rebuild: clean mkbuild mainmake
 
 mkbuild:
 	mkdir build 
+	
 clean:
 	rm -rf build main
