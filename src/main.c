@@ -4,6 +4,7 @@
 #include <unistd.h> /* sleep() */
 #include <curses.h>
 #include "greeting.h"
+#include "colors.h"
 
 int main()
 {
@@ -21,7 +22,8 @@ int main()
 	hello_text[1] = hello01;
 	hello_text[2] = hello02;
 	hello_text[3] = hello03;
-	hello_text[4] = hello04;
+	hello_text[4] = hello04;/*it looks bad, but i don't understand how to make it better*/
+	
 
 	if (!initscr())
 	{
@@ -29,8 +31,8 @@ int main()
 		return 1;
 	}
 	start_color();
-	init_pair(1, COLOR_CYAN, COLOR_BLACK); 
-	
+	init_pairs();/*this from colors.h */
+	wattron(stdscr, COLOR_PAIR(GREEN_BLACK));
 	noecho();
 
 	greeting_win* greeting = greeting_constructor(hello_text, 5, NULL);/* todo settings*/
