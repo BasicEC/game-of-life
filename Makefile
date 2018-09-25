@@ -6,7 +6,7 @@ CFLAGS=-Wall -I $(IDIR)
 SRC=$(wildcard src/*.c)
 OBJ=$(SRC:src/%.c=build/%.o)
 
-mainmake: $(OBJ)
+mainmake: mkbuild $(OBJ)
 	$(CC) -o $(TARGET) $(OBJ) -lncurses
 
 build/%.o: src/%.c
@@ -15,7 +15,7 @@ build/%.o: src/%.c
 rebuild: clean mkbuild mainmake
 
 mkbuild:
-	mkdir build 
-	
+	mkdir -p build
+
 clean:
 	rm -rf build main
