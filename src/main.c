@@ -5,6 +5,7 @@
 #include <curses.h>
 #include "greeting.h"
 #include "colors.h"
+#include "settings.h"
 
 int main()
 {
@@ -15,8 +16,8 @@ int main()
 	char hello00[] = "Welcome to Game of Life. >:]";
 	char hello01[] = "Now you will see a clear plane.";
 	char hello02[] = "You can mark some cells as living.";
-	char hello03[] = "(for navigation use arrow keys, and for marking use SPACE).";
-	char hello04[] = "Press ENTER when you will be ready to start marking and in the end of marking...";
+	char hello03[] = "(for navigation use arrow keys, for marking use SPACE, ENTER for start).";
+	char hello04[] = "Press ENTER to choose option";
 	char** hello_text = malloc(sizeof(char*)*5);
 	hello_text[0] = hello00;
 	hello_text[1] = hello01;
@@ -31,17 +32,22 @@ int main()
 		return 1;
 	}
 	start_color();
-	init_pairs();/*this from colors.h */
-	wattron(stdscr, COLOR_PAIR(GREEN_BLACK));
-	noecho();
 
-	greeting_win* greeting = greeting_constructor(hello_text, 5, NULL);/* todo settings*/
+	init_pairs();/*this from colors.h */
+	noecho();
+	settings_win* settings = settings_constructor();
+
+	greeting_win* greeting = greeting_constructor(hello_text, 5, settings);
 	if (greeting == NULL) {
 		printf("Your terminal is too small for my greeting >:[\n");
 		endwin();
 		return 0;
 	}
-	show_greeting(greeting);	
+
+	show_greeting(greeting);
+	free_greeting(greeting);
+	curs_set(1);
+	wattron(stdscr, COLOR_PAIR(settings->color));
 
 	clear();
 	box(stdscr, 0, 0);
@@ -83,6 +89,8 @@ int main()
 		if (key == 10)
 			break;
 	}
+
+	
 	endwin();
 	return 0;
 }
