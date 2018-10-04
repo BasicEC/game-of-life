@@ -9,22 +9,19 @@
 
 int main()
 {
-	int x, y;
-	x = 1;
-	y = 1;
+	int x = 1, y = 1, flag = 1;
 	int key;
 	char hello00[] = "Welcome to Game of Life. >:]";
 	char hello01[] = "Now you will see a clear plane.";
 	char hello02[] = "You can mark some cells as living.";
 	char hello03[] = "(for navigation use arrow keys, for marking use SPACE, ENTER for start).";
 	char hello04[] = "Press ENTER to choose option";
-	char** hello_text = malloc(sizeof(char*)*5);
+	char **hello_text = malloc(sizeof(char *) * 5);
 	hello_text[0] = hello00;
 	hello_text[1] = hello01;
 	hello_text[2] = hello02;
 	hello_text[3] = hello03;
-	hello_text[4] = hello04;/*it looks bad, but i don't understand how to make it better*/
-	
+	hello_text[4] = hello04; /*it looks bad, but i don't understand how to make it better*/
 
 	if (!initscr())
 	{
@@ -33,12 +30,13 @@ int main()
 	}
 	start_color();
 
-	init_pairs();/*this from colors.h */
+	init_pairs(); /*this from colors.h */
 	noecho();
-	settings_win* settings = settings_constructor();
+	settings_win *settings = settings_constructor();
 
-	greeting_win* greeting = greeting_constructor(hello_text, 5, settings);
-	if (greeting == NULL) {
+	greeting_win *greeting = greeting_constructor(hello_text, 5, settings);
+	if (greeting == NULL)
+	{
 		printf("Your terminal is too small for my greeting >:[\n");
 		endwin();
 		return 0;
@@ -47,16 +45,17 @@ int main()
 	show_greeting(greeting);
 	free_greeting(greeting);
 	curs_set(1);
+	field_t *field = field_def(COLS, LINES);
 	wattron(stdscr, COLOR_PAIR(settings->color));
 
 	clear();
 	box(stdscr, 0, 0);
-	
+
 	wmove(stdscr, y, x);
 	refresh();
 	keypad(stdscr, TRUE);
 
-	while (TRUE)
+	while (flag)
 	{
 		key = getch();
 		switch (key)
@@ -65,32 +64,40 @@ int main()
 			if (y <= 1)
 				break;
 			--y;
-			wmove(stdscr, y, x);
 			break;
 		case KEY_DOWN:
 			if (y >= LINES - 2)
 				break;
 			++y;
-			wmove(stdscr, y, x);
 			break;
 		case KEY_LEFT:
 			if (x <= 1)
 				break;
 			--x;
-			wmove(stdscr, y, x);
 			break;
 		case KEY_RIGHT:
 			if (x >= COLS - 2)
 				break;
 			++x;
-			wmove(stdscr, y, x);
 			break;
+		case ' ':
+			switch (field->plane[x][y])
+			{
+			case D_CELL:
+				field->plane[x][y] = L_CELL;
+				break;
+			case L_CELL:
+				field->plane[x][y] = D_CELL;
+				break;
+			}
+			waddch(stdscr, field->plane[x][y]);
+			break;
+		case 10: /*KEY_ENTER*/
+			flag = 0;
 		}
-		if (key == 10)
-			break;
+		wmove(stdscr, y, x);
 	}
 
-	
 	endwin();
 	return 0;
 }
