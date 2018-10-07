@@ -9,7 +9,7 @@
 
 int main()
 {
-	int x = 1, y = 1, flag = 1;
+	int x = 1, y = 1, isNotEnter = 1;
 	int key;
 	char hello00[] = "Welcome to Game of Life. >:]";
 	char hello01[] = "Now you will see a clear plane.";
@@ -22,7 +22,6 @@ int main()
 	hello_text[2] = hello02;
 	hello_text[3] = hello03;
 	hello_text[4] = hello04; /*it looks bad, but i don't understand how to make it better*/
-
 	if (!initscr())
 	{
 		printf("Error of init ncurses :(\n");
@@ -45,7 +44,8 @@ int main()
 	show_greeting(greeting);
 	free_greeting(greeting);
 	curs_set(1);
-	field_t *field = field_def(COLS, LINES);
+	field_t *field = field_def(LINES - 2, COLS - 2);
+
 	wattron(stdscr, COLOR_PAIR(settings->color));
 
 	clear();
@@ -55,7 +55,7 @@ int main()
 	refresh();
 	keypad(stdscr, TRUE);
 
-	while (flag)
+	while (isNotEnter)
 	{
 		key = getch();
 		switch (key)
@@ -81,21 +81,30 @@ int main()
 			++x;
 			break;
 		case ' ':
-			switch (field->plane[x][y])
+			switch (field->plane[y - 1][x - 1])
 			{
 			case D_CELL:
-				field->plane[x][y] = L_CELL;
+				field->plane[y-1][x-1] = L_CELL;
 				break;
 			case L_CELL:
-				field->plane[x][y] = D_CELL;
+				field->plane[y-1][x-1] = D_CELL;
 				break;
 			}
-			waddch(stdscr, field->plane[x][y]);
+			field->buff[y - 1][x - 1] = field->plane[y - 1][x - 1];
+			waddch(stdscr, field->buff[y - 1][x - 1]);
 			break;
 		case 10: /*KEY_ENTER*/
-			flag = 0;
+			isNotEnter = 0;
 		}
 		wmove(stdscr, y, x);
+	}
+	isNotEnter = 1;
+	while (isNotEnter) {
+		calc_step(field);
+		print_field(field, stdscr);
+		wrefresh(stdscr);
+//		sleep(1);
+		if (wgetch(stdscr) == 10) isNotEnter = 0;
 	}
 
 	endwin();
