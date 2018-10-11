@@ -2,7 +2,7 @@
 #define __COLORS__
 
 typedef enum Color_pair {
-	CYAN, 
+	CYAN = 1, 
 	YELLOW,
 	GREEN,
 	BLACK

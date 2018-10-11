@@ -6,15 +6,65 @@
 #include "greeting.h"
 #include "colors.h"
 #include "settings.h"
+#include <pthread.h>
+#include <stdlib.h>
+
+field_t *field;
+settings_win *settings;
+greeting_win *greeting;
+pthread_mutex_t mp = PTHREAD_MUTEX_INITIALIZER;
+
+void *draw_plane(void *vptr_args)
+{
+	while (true)
+	{
+		pthread_mutex_lock(&mp);
+		calc_step(field);
+		print_field(field, stdscr);
+		wrefresh(stdscr);
+		usleep(100000 * settings->speed);
+		pthread_mutex_unlock(&mp);
+		usleep(100000);
+	}
+}
+
+void *listen_key(void *vptr_args)
+{
+	int isNotExit = 1;
+	keypad(stdscr, TRUE);
+	while (isNotExit)
+	{
+		switch (getch())
+		{
+		case 27: /* esc*/
+			isNotExit = 0;
+			break;
+		case 'H':
+		case 'h':
+			pthread_mutex_lock(&mp);
+			show_greeting(greeting);
+			wattron(stdscr, COLOR_PAIR(settings->color));
+			clear();
+			box(stdscr, 0, 0);
+			print_field(field, stdscr);
+			wrefresh(stdscr);
+			pthread_mutex_unlock(&mp);
+		}
+	}
+	pthread_exit(NULL);
+}
 
 int main()
 {
+	pthread_t drawer;
+	pthread_t keyListener;
+	int status;
 	int x = 1, y = 1, isNotEnter = 1;
 	int key;
 	char hello00[] = "Welcome to Game of Life. >:]";
-	char hello01[] = "Now you will see a clear plane.";
-	char hello02[] = "You can mark some cells as living.";
-	char hello03[] = "(for navigation use arrow keys, for marking use SPACE, ENTER for start).";
+	char hello01[] = "h - Help";
+	char hello02[] = "Esc - exit";
+	char hello03[] = "For navigation use arrow keys, for marking use SPACE.";
 	char hello04[] = "Press ENTER to choose option";
 	char **hello_text = malloc(sizeof(char *) * 5);
 	hello_text[0] = hello00;
@@ -27,13 +77,13 @@ int main()
 		printf("Error of init ncurses :(\n");
 		return 1;
 	}
-	start_color();
 
+	start_color();
 	init_pairs(); /*this from colors.h */
 	noecho();
-	settings_win *settings = settings_constructor();
+	settings = settings_constructor();
 
-	greeting_win *greeting = greeting_constructor(hello_text, 5, settings);
+	greeting = greeting_constructor(hello_text, 5, settings);
 	if (greeting == NULL)
 	{
 		printf("Your terminal is too small for my greeting >:[\n");
@@ -42,9 +92,8 @@ int main()
 	}
 
 	show_greeting(greeting);
-	free_greeting(greeting);
 	curs_set(1);
-	field_t *field = field_def(LINES - 2, COLS - 2);
+	field = field_def(LINES - 2, COLS - 2);
 
 	wattron(stdscr, COLOR_PAIR(settings->color));
 
@@ -84,10 +133,10 @@ int main()
 			switch (field->plane[y - 1][x - 1])
 			{
 			case D_CELL:
-				field->plane[y-1][x-1] = L_CELL;
+				field->plane[y - 1][x - 1] = L_CELL;
 				break;
 			case L_CELL:
-				field->plane[y-1][x-1] = D_CELL;
+				field->plane[y - 1][x - 1] = D_CELL;
 				break;
 			}
 			field->buff[y - 1][x - 1] = field->plane[y - 1][x - 1];
@@ -95,18 +144,34 @@ int main()
 			break;
 		case 10: /*KEY_ENTER*/
 			isNotEnter = 0;
+			break;
+		case 27:
+			endwin();
+			printf("goodbye >:|\n");
+			return 0;
 		}
 		wmove(stdscr, y, x);
 	}
-	isNotEnter = 1;
-	while (isNotEnter) {
-		calc_step(field);
-		print_field(field, stdscr);
-		wrefresh(stdscr);
-//		sleep(1);
-		if (wgetch(stdscr) == 10) isNotEnter = 0;
+	curs_set(0);
+
+	status = pthread_create(&keyListener, NULL, listen_key, NULL);
+	if (status != 0)
+	{
+		printf("main error: can't create thread listen_key, status = %d\n", status);
+		endwin();
+		exit(status);
+	}
+	
+	status = pthread_create(&drawer, NULL, draw_plane, NULL);
+	if (status != 0)
+	{
+		printf("main error: can't create thread draw_plane, status = %d\n", status);
+		endwin();
+		exit(status);
 	}
 
+	pthread_join(keyListener, NULL);
 	endwin();
+	printf("goodbye >:]\n");
 	return 0;
 }

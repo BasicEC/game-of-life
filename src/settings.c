@@ -43,7 +43,7 @@ static void printColor(WINDOW *win, Color_pair text)
 		waddstr(win, "< GREEN  >");
 		break;
 	case BLACK:
-		return; /* BLACK for selected elements */
+		break;
 	}
 }
 
@@ -73,22 +73,13 @@ static void draw_win(settings_win *settings)
 	wmove(settings->win, S_HEIGHT - 1, (S_WIDTH - 34) / 2);
 	waddstr(settings->win, " Press Enter when you'll be ready ");
 
-	wmove(settings->win, 2, 1); /* color */
+	wmove(settings->win, 2, 1);
 	waddstr(settings->win, "     Color:      ");
 
-	wmove(settings->win, 5, 1); /* speed */
+	wmove(settings->win, 5, 1);
 	waddstr(settings->win, "     Speed:      ");
 }
 
-/*<Settings>
- *
- * color:   < COLOR >
- *
- * 
- * speed:   < x1 >
- *
- * <Press Enter when you'll be ready>     
- */
 void show_settings(settings_win *settings)
 {
 	int is_color_btn = 1;
@@ -116,7 +107,7 @@ void show_settings(settings_win *settings)
 		case KEY_LEFT:
 			if (is_color_btn)
 			{
-				settings->color = (settings->color + 2) % 3;
+				settings->color = ((settings->color % 3) + 1) % 3 + 1;
 				print_btn(settings, settings->selected, 1);
 				draw_win(settings);
 				print_btn(settings, settings->color, 0);
@@ -131,7 +122,7 @@ void show_settings(settings_win *settings)
 		case KEY_RIGHT:
 			if (is_color_btn)
 			{
-				settings->color = (settings->color + 1) % 3;
+				settings->color = settings->color % 3 + 1;
 				print_btn(settings, settings->selected, 1);
 				draw_win(settings);
 				print_btn(settings, settings->color, 0);

@@ -7,7 +7,7 @@
  * else you must rewrite calc_step() in field.c
  */
 #define D_CELL 32 /*dead cell (space)*/
-#define L_CELL 43 /*living cell*/ 
+#define L_CELL 35 /*living cell*/ 
 
 typedef struct {
 	char** plane;

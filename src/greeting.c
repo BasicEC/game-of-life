@@ -1,18 +1,6 @@
 #include <malloc.h>
-#include <unistd.h> /* sleep() */
 #include "greeting.h"
 #include "settings.h"
-
-static void type_string(WINDOW *win, char *str)
-{
-	int i = 0;
-	while (str[i] != 0)
-	{
-		waddch(win, str[i++]);
-		wrefresh(win);
-		usleep(70000);
-	}
-}
 
 greeting_win *greeting_constructor(char **text, int n_lines, settings_win *settings)
 {
@@ -42,15 +30,6 @@ greeting_win *greeting_constructor(char **text, int n_lines, settings_win *setti
 		return NULL; /*you must be ready to catch this null*/
 
 	greeting->win = newwin(height, width, offsety, offsetx);
-	if (settings == NULL)
-	{
-		wattron(greeting->win, COLOR_PAIR(CYAN));
-	}
-	else
-	{
-		wattron(greeting->win, COLOR_PAIR(settings->color));
-	}
-	box(greeting->win, 0, 0);
 	return greeting;
 }
 
@@ -72,13 +51,21 @@ static void print_btn(greeting_win *greeting, Color_pair color, int isPlay)
 
 void show_greeting(greeting_win *greeting)
 {
+	if (greeting->settings == NULL)
+	{
+		wattron(greeting->win, COLOR_PAIR(CYAN));
+	}
+	else
+	{
+		wattron(greeting->win, COLOR_PAIR(greeting->settings->color));
+	}
+	box(greeting->win, 0, 0);
 	int isPlay = 0;
 	for (int i = 0; i < greeting->n_lines; ++i)
 	{
 		wmove(greeting->win, i + 1, 1);
 		wrefresh(greeting->win);
-		sleep(1);
-		type_string(greeting->win, greeting->text[i]);
+		waddstr(greeting->win, greeting->text[i]);
 	}
 	
 	print_btn(greeting, greeting->settings->color, isPlay);

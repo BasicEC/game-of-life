@@ -7,7 +7,7 @@ SRC=$(wildcard src/*.c)
 OBJ=$(SRC:src/%.c=build/%.o)
 
 mainmake: mkbuild $(OBJ)
-	$(CC) -o $(TARGET) $(OBJ) -lncurses
+	$(CC) -o $(TARGET) $(OBJ) -lncurses -pthread
 
 build/%.o: src/%.c
 	$(CC) -c -o $@ $< $(CFLAGS)
