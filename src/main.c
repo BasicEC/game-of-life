@@ -65,8 +65,8 @@ int main()
 	char hello01[] = "h - Help";
 	char hello02[] = "Esc - exit";
 	char hello03[] = "For navigation use arrow keys, for marking use SPACE.";
-	char hello04[] = "Press ENTER to choose option";
-	char **hello_text = malloc(sizeof(char *) * 5);
+	char hello04[] = "Press ENTER when you finish marking.";
+	char **hello_text = malloc(sizeof(char *) * 6);
 	hello_text[0] = hello00;
 	hello_text[1] = hello01;
 	hello_text[2] = hello02;
