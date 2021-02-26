@@ -126,19 +126,16 @@ int main()
 	pthread_t drawer;
 	pthread_t keyListener;
 	int status;
-	char hello00[] = "Welcome to Game of Life. >:]";
-	char hello01[] = "h - Help";
-	char hello02[] = "Esc - exit";
-	char hello03[] = "m - mark field"; 
-	char hello04[] = "For navigation use arrow keys, for marking use SPACE.";
-	char hello05[] = "Press ENTER when you finish marking.";
-	char **hello_text = malloc(sizeof(char *) * 6);
-	hello_text[0] = hello00;
-	hello_text[1] = hello01;
-	hello_text[2] = hello02;
-	hello_text[3] = hello03;
-	hello_text[4] = hello04; /*it looks bad, but i don't understand how to make it better*/
-	hello_text[5] = hello05;
+
+	char *hello_text[] = {
+		"Welcome to Game of Life. >:]",
+		"h - Help",
+		"Esc - exit",
+		"m - mark field",
+		"For navigation use arrow keys, for marking use SPACE.",
+		"Press ENTER when you finish marking."
+	};
+
 	if (!initscr())
 	{
 		printf("Error of init ncurses :(\n");
@@ -150,7 +147,7 @@ int main()
 	noecho();
 	settings = settings_constructor();
 
-	greeting = greeting_constructor(hello_text, 5, settings);
+	greeting = greeting_constructor(hello_text, 6, settings);
 	if (greeting == NULL)
 	{
 		printf("Your terminal is too small for my greeting >:[\n");
